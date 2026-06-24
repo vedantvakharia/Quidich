@@ -1,0 +1,115 @@
+"""Skeleton constants used by benchmark and export utilities."""
+
+COCO_17_KEYPOINTS = [
+    "nose",
+    "left_eye",
+    "right_eye",
+    "left_ear",
+    "right_ear",
+    "left_shoulder",
+    "right_shoulder",
+    "left_elbow",
+    "right_elbow",
+    "left_wrist",
+    "right_wrist",
+    "left_hip",
+    "right_hip",
+    "left_knee",
+    "right_knee",
+    "left_ankle",
+    "right_ankle",
+]
+
+COCO_WHOLEBODY_133_KEYPOINTS = (
+    COCO_17_KEYPOINTS
+    + [
+        "left_big_toe",
+        "left_small_toe",
+        "left_heel",
+        "right_big_toe",
+        "right_small_toe",
+        "right_heel",
+    ]
+    + [f"face_{index:02d}" for index in range(68)]
+    + [f"left_hand_{index:02d}" for index in range(21)]
+    + [f"right_hand_{index:02d}" for index in range(21)]
+)
+
+MEDIAPIPE_33_KEYPOINTS = [
+    "nose",
+    "left_eye_inner",
+    "left_eye",
+    "left_eye_outer",
+    "right_eye_inner",
+    "right_eye",
+    "right_eye_outer",
+    "left_ear",
+    "right_ear",
+    "mouth_left",
+    "mouth_right",
+    "left_shoulder",
+    "right_shoulder",
+    "left_elbow",
+    "right_elbow",
+    "left_wrist",
+    "right_wrist",
+    "left_pinky",
+    "right_pinky",
+    "left_index",
+    "right_index",
+    "left_thumb",
+    "right_thumb",
+    "left_hip",
+    "right_hip",
+    "left_knee",
+    "right_knee",
+    "left_ankle",
+    "right_ankle",
+    "left_heel",
+    "right_heel",
+    "left_foot_index",
+    "right_foot_index",
+]
+
+OPENPOSE_BODY25_KEYPOINTS = [
+    "nose",
+    "neck",
+    "right_shoulder",
+    "right_elbow",
+    "right_wrist",
+    "left_shoulder",
+    "left_elbow",
+    "left_wrist",
+    "mid_hip",
+    "right_hip",
+    "right_knee",
+    "right_ankle",
+    "left_hip",
+    "left_knee",
+    "left_ankle",
+    "right_eye",
+    "left_eye",
+    "right_ear",
+    "left_ear",
+    "left_big_toe",
+    "left_small_toe",
+    "left_heel",
+    "right_big_toe",
+    "right_small_toe",
+    "right_heel",
+]
+
+CRICKET_OCCLUSION_TAGS = [
+    "gloves",
+    "helmet",
+    "pads",
+    "bat",
+    "ball",
+    "other_players",
+    "umpire",
+    "shadows",
+    "self_occlusion",
+    "truncation",
+    "motion_blur",
+    "low_light",
+]

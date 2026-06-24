@@ -1,0 +1,38 @@
+schema_version: 1
+model:
+  id: yolo26x_pose
+  name: Ultralytics YOLO26x-pose
+  family: Ultralytics YOLO Pose
+  role: fast_body17_fallback
+  framework: ultralytics
+  skeleton: coco_17
+  input_size:
+  - 640
+  - 640
+  checkpoint: models/yolo26x_pose/weights/yolo26x-pose.pt
+  config: ultralytics_pose
+  export_targets:
+  - onnx
+  - tensorrt
+  - openvino
+  - coreml
+  - tflite
+  license: AGPL-3.0 or enterprise license required for closed products
+  status: verify_availability
+  expected_strengths:
+  - Production-friendly API and export path
+  - Good fast baseline
+  expected_risks:
+  - Body-only COCO-17
+  - License must be checked for commercial deployment
+  sources:
+  - https://docs.ultralytics.com/tasks/pose
+environment:
+  env_name: cricket-yolo26x-pose
+  profile: ultralytics_pose
+  smoke_profile: ultralytics
+  checkpoint: models/yolo26x_pose/weights/yolo26x-pose.pt
+  model_name: models/yolo26x_pose/weights/yolo26x-pose.pt
+  smoke_image: external/mmpose/projects/rtmpose/examples/onnxruntime/human-pose.jpeg
+  notes:
+  - Ultralytics downloads official weights on first use.

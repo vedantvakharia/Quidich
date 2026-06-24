@@ -1,0 +1,61 @@
+schema_version: 1
+
+target_skeleton: coco_17
+
+coco_17:
+  keypoints:
+    - nose
+    - left_eye
+    - right_eye
+    - left_ear
+    - right_ear
+    - left_shoulder
+    - right_shoulder
+    - left_elbow
+    - right_elbow
+    - left_wrist
+    - right_wrist
+    - left_hip
+    - right_hip
+    - left_knee
+    - right_knee
+    - left_ankle
+    - right_ankle
+  skeleton_edges:
+    - [nose, left_eye]
+    - [nose, right_eye]
+    - [left_eye, left_ear]
+    - [right_eye, right_ear]
+    - [left_shoulder, right_shoulder]
+    - [left_shoulder, left_elbow]
+    - [left_elbow, left_wrist]
+    - [right_shoulder, right_elbow]
+    - [right_elbow, right_wrist]
+    - [left_shoulder, left_hip]
+    - [right_shoulder, right_hip]
+    - [left_hip, right_hip]
+    - [left_hip, left_knee]
+    - [left_knee, left_ankle]
+    - [right_hip, right_knee]
+    - [right_knee, right_ankle]
+
+source_to_coco_17:
+  coco_17:
+    description: Models already emitting COCO-17 order.
+    source_indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+  coco_wholebody_133:
+    description: COCO-WholeBody body joints are the first 17 keypoints.
+    source_indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+  wholebody_308:
+    description: Sapiens2 308-keypoint metadata starts with COCO-style body joints.
+    source_indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+  mediapipe_33:
+    description: MediaPipe Pose landmarks mapped to COCO-17 by semantic joint name.
+    source_indices: [0, 2, 5, 7, 8, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]
+
+  openpose_body25:
+    description: OpenPose BODY_25 mapped to COCO-17. BODY_25 neck and foot joints are kept for native metrics only.
+    source_indices: [0, 15, 16, 17, 18, 5, 2, 6, 3, 7, 4, 12, 9, 13, 10, 14, 11]

@@ -1,0 +1,239 @@
+schema_version: 1
+
+defaults:
+  conda_executable: conda
+  model_store_dir: models
+  smoke_image: external/mmpose/projects/rtmpose/examples/onnxruntime/human-pose.jpeg
+
+profiles:
+  mmpose_v1:
+    python: "3.10"
+    install:
+      conda:
+        channels: [pytorch, nvidia]
+        packages:
+          - pytorch==2.1.2
+          - torchvision==0.16.2
+          - pytorch-cuda=12.1
+          - mkl=2023.1.0
+          - intel-openmp=2023.1.0
+      pip:
+        - --upgrade pip wheel setuptools<80 PyYAML numpy<2
+        - xtcocotools json_tricks scipy pandas tqdm opencv-python<4.12 munkres matplotlib pillow pycocotools shapely terminaltables
+      commands:
+        - python -m pip install "mmengine>=0.4.0,<1.0.0"
+        - python -m pip install --force-reinstall --no-deps wheels/mmcv/mmcv-2.1.0-cp310-cp310-linux_x86_64.whl
+        - python -m pip install "mmdet>=3.0.0,<3.3.0" --no-deps
+        - python -m pip install "mmpretrain>=1.0.0,<1.3.0" --no-deps
+        - python -m pip install -v -e external/mmpose --no-deps
+
+  dwpose_onnx:
+    python: "3.10"
+    install:
+      pip:
+        - --upgrade pip wheel setuptools PyYAML numpy<2
+        - opencv-python<4.12 pillow matplotlib onnx onnxruntime-gpu huggingface_hub
+        - torch --index-url https://download.pytorch.org/whl/cpu
+
+  ultralytics_pose:
+    python: "3.10"
+    install:
+      conda:
+        channels: [pytorch, nvidia]
+        packages:
+          - pytorch==2.1.2
+          - torchvision==0.16.2
+          - pytorch-cuda=12.1
+          - mkl=2023.1.0
+          - intel-openmp=2023.1.0
+      pip:
+        - --upgrade pip wheel setuptools PyYAML numpy<2
+        - ultralytics onnx onnxruntime-gpu pandas tqdm opencv-python<4.12 pycocotools
+
+  vitpose_legacy:
+    python: "3.8"
+    install:
+      pip:
+        - --upgrade pip wheel setuptools<80 PyYAML numpy<2
+        - torch==1.9.1+cu111 torchvision==0.10.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
+        - mmcv==1.3.17 timm==0.4.9 einops json_tricks xtcocotools opencv-python<4.12 scipy pandas tqdm munkres matplotlib pillow
+      commands:
+        - python -m pip install -v -e external/ViTPose --no-deps
+
+  sapiens2_pose:
+    python: "3.12"
+    install:
+      pip:
+        - --upgrade pip wheel setuptools PyYAML
+        - torch torchvision --index-url https://download.pytorch.org/whl/cu126
+        - huggingface_hub
+      commands:
+        - python -m pip install -e external/sapiens2
+
+  mediapipe_pose:
+    python: "3.10"
+    install:
+      pip:
+        - --upgrade pip wheel setuptools PyYAML
+        - mediapipe opencv-python<4.12 pandas tqdm
+
+  openpose_system:
+    python: "3.10"
+    install:
+      pip:
+        - --upgrade pip wheel setuptools PyYAML
+
+models:
+  rtmw_l:
+    env_name: cricket-rtmw-l
+    profile: mmpose_v1
+    smoke_profile: mmpose
+    benchmark_runner: mmpose_topdown
+    config: external/mmpose/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb320-270e_cocktail14-384x288.py
+    checkpoint: models/rtmw_l/weights/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth
+    assets:
+      - kind: url
+        url: https://download.openmmlab.com/mmpose/v1/projects/rtmw/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth
+        path: models/rtmw_l/weights/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth
+        required_for_smoke: true
+
+  rtmw_x:
+    env_name: cricket-rtmw-x
+    profile: mmpose_v1
+    smoke_profile: mmpose
+    benchmark_runner: mmpose_topdown
+    config: external/mmpose/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb320-270e_cocktail14-384x288.py
+    checkpoint: models/rtmw_x/weights/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth
+    assets:
+      - kind: url
+        url: https://huggingface.co/KlingTeam/X-Dub/resolve/main/dwpose_tools/models/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth
+        path: models/rtmw_x/weights/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth
+        required_for_smoke: true
+
+  rtmpose_l_wholebody:
+    env_name: cricket-rtmpose-l-wholebody
+    profile: mmpose_v1
+    smoke_profile: mmpose
+    benchmark_runner: mmpose_topdown
+    config: external/mmpose/configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py
+    checkpoint: models/rtmpose_l_wholebody/weights/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth
+    assets:
+      - kind: url
+        url: https://huggingface.co/scenario-labs/pose/resolve/main/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth
+        path: models/rtmpose_l_wholebody/weights/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth
+        required_for_smoke: true
+
+  dwpose_l_384:
+    env_name: cricket-dwpose-l-384
+    profile: dwpose_onnx
+    smoke_profile: dwpose
+    config: external/DWPose/mmpose/configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-l_8xb32-270e_coco-ubody-wholebody-384x288.py
+    checkpoint: models/dwpose_l_384/weights/dw-ll_ucoco_384.onnx
+    smoke_image: external/DWPose/ControlNet-v1-1-nightly/test_imgs/pose1.png
+    assets:
+      - kind: url
+        url: https://huggingface.co/yzd-v/DWPose/resolve/main/dw-ll_ucoco_384.onnx
+        path: models/dwpose_l_384/weights/dw-ll_ucoco_384.onnx
+        required_for_smoke: true
+      - kind: url
+        url: https://huggingface.co/yzd-v/DWPose/resolve/main/yolox_l.onnx
+        path: models/dwpose_l_384/weights/yolox_l.onnx
+        required_for_smoke: true
+
+  rtmo_l:
+    env_name: cricket-rtmo-l
+    profile: mmpose_v1
+    smoke_profile: mmpose
+    config: external/mmpose/configs/body_2d_keypoint/rtmo/coco/rtmo-l_16xb16-600e_coco-640x640.py
+    checkpoint: models/rtmo_l/weights/rtmo-l_16xb16-600e_coco-640x640-516a421f_20231211.pth
+    assets:
+      - kind: url
+        url: https://download.openmmlab.com/mmpose/v1/projects/rtmo/rtmo-l_16xb16-600e_coco-640x640-516a421f_20231211.pth
+        path: models/rtmo_l/weights/rtmo-l_16xb16-600e_coco-640x640-516a421f_20231211.pth
+        required_for_smoke: true
+
+  yolo26x_pose:
+    env_name: cricket-yolo26x-pose
+    profile: ultralytics_pose
+    smoke_profile: ultralytics
+    benchmark_runner: yolo
+    checkpoint: models/yolo26x_pose/weights/yolo26x-pose.pt
+    model_name: models/yolo26x_pose/weights/yolo26x-pose.pt
+    smoke_image: external/mmpose/projects/rtmpose/examples/onnxruntime/human-pose.jpeg
+    notes:
+      - Ultralytics downloads official weights on first use.
+
+  vitpose_h:
+    env_name: cricket-vitpose-h-mmpose-v1
+    profile: mmpose_v1
+    smoke_profile: mmpose
+    config: external/mmpose/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192.py
+    checkpoint: models/vitpose_h/weights/td-hm_ViTPose-huge_8xb64-210e_coco-256x192-e32adcd4_20230314.pth
+    smoke_image: external/mmpose/projects/rtmpose/examples/onnxruntime/human-pose.jpeg
+    heavy_runtime: true
+    assets:
+      - kind: url
+        url: https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192-e32adcd4_20230314.pth
+        path: models/vitpose_h/weights/td-hm_ViTPose-huge_8xb64-210e_coco-256x192-e32adcd4_20230314.pth
+        required_for_smoke: true
+
+  sapiens2_1b_pose:
+    env_name: cricket-sapiens2-1b-pose
+    profile: sapiens2_pose
+    smoke_profile: sapiens2
+    config: external/sapiens2/sapiens/pose/configs/keypoints308/shutterstock_goliath_3po/sapiens2_1b_keypoints308_shutterstock_goliath_3po-1024x768.py
+    checkpoint: models/sapiens2_1b_pose/weights/sapiens2_1b_pose.safetensors
+    detector: models/sapiens2_1b_pose/weights/detr-resnet-101-dc5
+    smoke_image: external/sapiens2/demo/data/000001.png
+    assets:
+      - kind: hf
+        repo_id: facebook/sapiens2-pose-1b
+        filename: sapiens2_1b_pose.safetensors
+        path: models/sapiens2_1b_pose/weights/sapiens2_1b_pose.safetensors
+        large: true
+        required_for_smoke: true
+      - kind: hf_repo
+        repo_id: facebook/detr-resnet-101-dc5
+        path: models/sapiens2_1b_pose/weights/detr-resnet-101-dc5
+        large: true
+        required_for_smoke: true
+    notes:
+      - The 1B model is an offline teacher candidate and may exceed this laptop's practical VRAM budget.
+
+  mediapipe_blazepose_heavy:
+    env_name: cricket-mediapipe-blazepose-heavy
+    profile: mediapipe_pose
+    smoke_profile: mediapipe
+    config: model_complexity=2
+    checkpoint: models/mediapipe_blazepose_heavy/weights/pose_landmarker_heavy.task
+    smoke_image: external/mmpose/projects/rtmpose/examples/onnxruntime/human-pose.jpeg
+    assets:
+      - kind: url
+        url: https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task
+        path: models/mediapipe_blazepose_heavy/weights/pose_landmarker_heavy.task
+        required_for_smoke: true
+
+  openpose_body25:
+    env_name: cricket-openpose-body25
+    profile: openpose_system
+    smoke_profile: openpose
+    skeleton: openpose_body25
+    config: models/openpose_body25/configs/openpose_body25.yaml
+    checkpoint: models/openpose_body25/weights/pose/body_25/pose_iter_584000.caffemodel
+    smoke_image: external/mmpose/projects/rtmpose/examples/onnxruntime/human-pose.jpeg
+    executable: external/openpose/build/examples/openpose/openpose.bin
+    assets:
+      - kind: url
+        url: http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/body_25/pose_iter_584000.caffemodel
+        fallback_urls:
+          - https://huggingface.co/gaijingeek/openpose-models/resolve/main/pose/body_25/pose_iter_584000.caffemodel
+        path: models/openpose_body25/weights/pose/body_25/pose_iter_584000.caffemodel
+        required_for_smoke: true
+      - kind: url
+        url: https://raw.githubusercontent.com/CMU-Perceptual-Computing-Lab/openpose/master/models/pose/body_25/pose_deploy.prototxt
+        path: models/openpose_body25/weights/pose/body_25/pose_deploy.prototxt
+        required_for_smoke: true
+    notes:
+      - Official CMU OpenPose is a C++/Caffe application; this repo builds a CPU-only validation binary at external/openpose/build/examples/openpose/openpose.bin with scripts/setup_openpose.py.
+      - Build GPU/CUDA OpenPose separately on benchmark machines when speed matters.
+      - The CMU model host is tried first; a Hugging Face mirror is configured only as a fallback because the original host is often unavailable.

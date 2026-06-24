@@ -1,0 +1,112 @@
+schema_version: 1
+
+datasets:
+  coco17_val2017:
+    name: COCO 2017 validation keypoints
+    task: 2d_keypoint_detection
+    target_skeleton: coco_17
+    root: data/raw/coco
+    images: data/raw/coco/val2017
+    annotation_file: data/raw/coco/annotations/person_keypoints_val2017.json
+    keypoint_mapping: configs/keypoint_mappings.yaml
+    split: val2017
+    eval_metric: COCO OKS AP/AR
+    urls:
+      images: http://images.cocodataset.org/zips/val2017.zip
+      annotations: http://images.cocodataset.org/annotations/annotations_trainval2017.zip
+    expected:
+      images: 5000
+      annotation_file: person_keypoints_val2017.json
+    notes:
+      - Use this as the first open-source benchmark dataset before cricket-specific splits.
+      - Normalize every model output to COCO-17 before comparing keypoint metrics.
+
+  coco_wholebody_val:
+    name: COCO-WholeBody validation
+    task: wholebody_2d_keypoint_detection
+    target_skeleton: coco_wholebody_133
+    root: data/raw/coco_wholebody
+    images: data/raw/coco/val2017
+    annotation_file: data/raw/coco_wholebody/annotations/coco_wholebody_val_v1.0.json
+    keypoint_mapping: configs/keypoint_mappings.yaml
+    split: val
+    eval_metric: WholeBody AP plus body/foot/face/hand AP
+    urls:
+      annotations: manual_or_project_specific
+    expected:
+      annotation_file: coco_wholebody_val_v1.0.json
+    notes:
+      - Native benchmark for RTMW, RTMPose WholeBody, and DWPose.
+      - Also emit reduced COCO-17 metrics for cross-model comparison.
+
+  ochuman_val:
+    name: OCHuman validation/test
+    task: occluded_2d_keypoint_detection
+    target_skeleton: coco_17
+    root: data/raw/ochuman
+    images: data/raw/ochuman/images
+    annotation_file: data/raw/ochuman/annotations/ochuman.json
+    keypoint_mapping: configs/keypoint_mappings.yaml
+    split: val_test
+    eval_metric: OKS AP/AR and occlusion bucket robustness
+    urls:
+      dataset: manual_or_project_specific
+    notes:
+      - Occlusion benchmark relevant to cricket equipment and player overlap.
+
+  crowdpose_val:
+    name: CrowdPose validation
+    task: crowded_2d_keypoint_detection
+    target_skeleton: coco_17
+    root: data/raw/crowdpose
+    images: data/raw/crowdpose/images
+    annotation_file: data/raw/crowdpose/annotations/crowdpose_val.json
+    keypoint_mapping: configs/keypoint_mappings.yaml
+    split: val
+    eval_metric: AP, AP(E), AP(M), AP(H)
+    urls:
+      dataset: manual_or_project_specific
+    notes:
+      - Crowd benchmark for multi-person sports scenes.
+
+  human36m:
+    name: Human3.6M
+    task: 3d_pose_estimation
+    target_skeleton: h36m
+    root: data/raw/human36m
+    annotation_file: data/raw/human36m/annotations.json
+    split: protocol_1_and_2
+    eval_metric: MPJPE and PA-MPJPE
+    urls:
+      dataset: license_restricted_manual
+    notes:
+      - Use only where access/license permits.
+
+  mpi_inf_3dhp:
+    name: MPI-INF-3DHP
+    task: 3d_pose_estimation
+    target_skeleton: mpi_inf_3dhp
+    root: data/raw/mpi_inf_3dhp
+    annotation_file: data/raw/mpi_inf_3dhp/annotations.json
+    split: test
+    eval_metric: MPJPE, PCK3D, AUC
+    urls:
+      dataset: manual_or_project_specific
+    notes:
+      - 3D generalization benchmark.
+
+  cricket_internal:
+    name: Cricket internal benchmark
+    task: cricket_pose_estimation
+    target_skeleton: coco_17
+    root: data/raw/cricket
+    annotation_file: data/raw/cricket/annotations/cricket_pose.jsonl
+    calibration_dir: data/raw/cricket/calibration
+    split_files:
+      train: data/splits/cricket_train.json
+      val: data/splits/cricket_val.json
+      test: data/splits/cricket_test.json
+    eval_metric: cricket PCK, occlusion robustness, reprojection error, 3D error
+    notes:
+      - Added after public dataset framework is stable.
+      - Requires locked splits, camera calibration, and occlusion labels.

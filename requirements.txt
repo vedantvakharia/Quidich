@@ -1,0 +1,6 @@
+numpy
+opencv-python
+openpyxl
+PyYAML
+pytest
+tqdm

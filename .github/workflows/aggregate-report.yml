@@ -1,0 +1,61 @@
+# Regenerate the shared comparison view from committed benchmark run folders and
+# publish it to GitHub Pages. Contributors commit only benchmarks/runs/<run_id>/;
+# the derived results/*.csv and benchmarks/reports/*.html are built here, never by
+# hand, so there is nothing to merge and nothing to conflict.
+# See docs/collaboration.md ("Why CI owns the aggregates").
+#
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+
+name: Aggregate & report
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a newer push supersede an in-flight publish, but don't cancel a run mid-deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # aggregate/report only read run-folder JSON and write CSV/HTML.
+      # No model weights, datasets, or GPU are needed.
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Aggregate run metrics and render the report
+        run: |
+          python3 scripts/benchmark.py aggregate
+          python3 scripts/benchmark.py report
+
+      # Assemble a small static site: the HTML report at the root, the CSVs alongside.
+      - name: Assemble Pages site
+        run: |
+          mkdir -p _site/results
+          cp -r benchmarks/reports/* _site/ 2>/dev/null || true
+          cp results/*.csv _site/results/ 2>/dev/null || true
+          # Make the aggregate report the site landing page if present.
+          if [ -f _site/aggregate/index.html ] && [ ! -f _site/index.html ]; then
+            cp _site/aggregate/index.html _site/index.html
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - uses: actions/deploy-pages@v4

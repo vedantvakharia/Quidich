@@ -1,0 +1,150 @@
+schema_version: 1
+
+benchmark_target:
+  skeleton: coco_17
+  keypoint_mapping: configs/keypoint_mappings.yaml
+  default_dataset: coco17_val2017
+  dataset_config: configs/datasets.yaml
+
+result_storage:
+  run_root: benchmarks/runs
+  report_root: benchmarks/reports
+  aggregate_csv: results/aggregate_metrics.csv
+  immutable_per_run_files: true
+
+acceptance_thresholds:
+  p95_end_to_end_latency_ms: 200
+  mean_2d_reprojection_error_px: 10
+  mean_3d_keypoint_error_mm: 25
+  max_dropped_track_rate: 0.05
+
+selection_weights:
+  cricket_2d_accuracy: 0.40
+  occlusion_robustness: 0.25
+  latency: 0.20
+  stability_jitter: 0.10
+  integration_effort: 0.05
+
+public_benchmarks:
+  - dataset: COCO Keypoints
+    split: val2017
+    metric: AP/AR using OKS
+    purpose: Standard COCO-17 comparison
+  - dataset: COCO-WholeBody
+    split: val
+    metric: Whole AP plus body/foot/face/hand AP
+    purpose: WholeBody 133 comparison
+  - dataset: OCHuman
+    split: val/test
+    metric: AP/AR using OKS
+    purpose: Heavy occlusion benchmark
+  - dataset: CrowdPose
+    split: val/test
+    metric: AP, AP(E), AP(M), AP(H)
+    purpose: Player overlap and crowded scenes
+  - dataset: Human3.6M
+    split: protocol_1_and_2
+    metric: MPJPE and P-MPJPE
+    purpose: 3D reference benchmark where compatible
+  - dataset: MPI-INF-3DHP
+    split: test
+    metric: MPJPE, PCK, AUC
+    purpose: 3D reference benchmark where compatible
+  - dataset: H3WB
+    split: official
+    metric: Whole-body MPJPE
+    purpose: 3D whole-body reference benchmark
+
+cricket_occlusion_tags:
+  - gloves
+  - helmet
+  - pads
+  - bat
+  - ball
+  - other_players
+  - umpire
+  - shadows
+  - self_occlusion
+  - truncation
+  - motion_blur
+  - low_light
+
+speed_protocol:
+  batch_size: 1
+  warmup_frames: 100
+  precision_order: [tensorrt_fp16, onnx_fp16, onnx_fp32, pytorch_fp32]
+  camera_counts: [1, 2, 4, 6]
+  latency_percentiles: [50, 90, 95, 99]
+
+metric_inventory:
+  two_dimensional:
+    - coco_oks_ap
+    - coco_oks_ar
+    - pck@0.05
+    - pck@0.10
+    - pck@0.20
+    - mean_pixel_error
+    - normalized_mean_error
+    - per_keypoint_error
+    - detection_rate
+    - missing_keypoint_rate
+    - confidence_calibration_error
+  native_capability:
+    - body_ap
+    - foot_ap
+    - face_ap
+    - hand_ap
+    - native_skeleton_completeness
+    - reduced_coco17_score
+  three_dimensional:
+    - mpjpe_mm
+    - pa_mpjpe_mm
+    - pck3d
+    - auc
+    - acceleration_error
+    - mean_reprojection_error_px
+    - triangulation_success_rate
+    - per_joint_3d_error
+  speed:
+    - cold_start_time_ms
+    - model_load_time_ms
+    - preprocess_latency_ms
+    - inference_latency_ms
+    - postprocess_latency_ms
+    - end_to_end_latency_ms
+    - latency_p50_ms
+    - latency_p90_ms
+    - latency_p95_ms
+    - latency_p99_ms
+    - fps_per_camera
+    - gpu_memory_peak_mb
+    - cpu_memory_peak_mb
+    - gpu_utilization_percent
+  robustness:
+    - occlusion_bucket_scores
+    - motion_blur_bucket_scores
+    - low_light_bucket_scores
+    - multi_person_crowd_failure_rate
+    - temporal_jitter
+    - dropped_track_rate
+
+visualizations:
+  - model_ranking_table
+  - accuracy_latency_pareto
+  - p95_latency_bar_chart
+  - per_keypoint_error_heatmap
+  - native_vs_coco17_capability_chart
+  - radar_chart
+  - benchmark_coverage_matrix
+  - hardware_comparison_table
+  - qualitative_failure_grid
+
+fine_tuning_augmentations:
+  - equipment_occlusion_overlay
+  - random_erasing
+  - shadow_lighting_shift
+  - motion_blur
+  - compression
+  - partial_player_crop
+  - multi_person_overlap
+  - low_confidence_keypoint_masking

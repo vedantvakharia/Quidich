@@ -1,0 +1,224 @@
+schema_version: 1
+default_target:
+  hardware: nvidia_gpu
+  precision: fp16
+  skeleton: coco_17
+  latency_budget_ms: 200
+  reprojection_budget_px: 10
+  mpjpe_budget_mm: 25
+
+models:
+  - id: rtmw_l
+    name: RTMW-l
+    family: OpenMMLab RTMW
+    role: primary_candidate
+    framework: mmpose
+    skeleton: coco_wholebody_133
+    input_size: [384, 288]
+    checkpoint: models/rtmw_l/weights/rtmw-dw-x-l_simcc-cocktail14_270e-384x288-20231122.pth
+    config: external/mmpose/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-l_8xb320-270e_cocktail14-384x288.py
+    export_targets: [onnx, tensorrt]
+    license: Apache-2.0 for code; verify checkpoint terms
+    status: candidate
+    expected_strengths:
+      - Real-time whole-body candidate
+      - Strong public COCO-WholeBody result
+      - Deployment-friendly OpenMMLab ecosystem
+    expected_risks:
+      - Needs local TensorRT validation on target GPU
+      - Cricket equipment occlusions must be measured before fine-tuning
+    sources:
+      - https://arxiv.org/abs/2407.08634
+      - https://github.com/open-mmlab/mmpose/tree/main/projects/rtmpose
+
+  - id: rtmw_x
+    name: RTMW-x
+    family: OpenMMLab RTMW
+    role: primary_candidate
+    framework: mmpose
+    skeleton: coco_wholebody_133
+    input_size: [384, 288]
+    checkpoint: models/rtmw_x/weights/rtmw-x_simcc-cocktail14_pt-ucoco_270e-384x288-f840f204_20231122.pth
+    config: external/mmpose/configs/wholebody_2d_keypoint/rtmpose/cocktail14/rtmw-x_8xb320-270e_cocktail14-384x288.py
+    export_targets: [onnx, tensorrt]
+    license: Apache-2.0 for code; verify checkpoint terms
+    status: candidate
+    expected_strengths:
+      - High-accuracy whole-body candidate
+      - Useful upper bound for RTMW family
+    expected_risks:
+      - Higher latency and memory than RTMW-l
+    sources:
+      - https://arxiv.org/abs/2407.08634
+
+  - id: rtmpose_l_wholebody
+    name: RTMPose-l WholeBody
+    family: OpenMMLab RTMPose
+    role: primary_candidate
+    framework: mmpose
+    skeleton: coco_wholebody_133
+    input_size: [384, 288]
+    checkpoint: models/rtmpose_l_wholebody/weights/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth
+    config: external/mmpose/configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py
+    export_targets: [onnx, tensorrt, ncnn, openvino]
+    license: Apache-2.0 for code; verify checkpoint terms
+    status: candidate
+    expected_strengths:
+      - Mature deployment tooling
+      - Strong speed/accuracy tradeoff
+    expected_risks:
+      - WholeBody accuracy may lag RTMW/DWPose
+    sources:
+      - https://arxiv.org/abs/2303.07399
+      - https://github.com/open-mmlab/mmpose/tree/main/projects/rtmpose
+
+  - id: dwpose_l_384
+    name: DWPose-l 384x288
+    family: DWPose
+    role: primary_candidate
+    framework: mmpose_onnx
+    skeleton: coco_wholebody_133
+    input_size: [384, 288]
+    checkpoint: models/dwpose_l_384/weights/dw-ll_ucoco_384.onnx
+    config: external/DWPose/mmpose/configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-l_8xb32-270e_coco-ubody-wholebody-384x288.py
+    export_targets: [onnx]
+    license: Apache-2.0 for code; verify checkpoint terms
+    status: candidate
+    expected_strengths:
+      - Distilled whole-body performance
+      - Strong hands/face/feet coverage for UE retargeting context
+    expected_risks:
+      - Integration path may be less standard than RTMW in current MMPose
+    sources:
+      - https://arxiv.org/abs/2307.15880
+      - https://github.com/IDEA-Research/DWPose
+
+  - id: rtmo_l
+    name: RTMO-l
+    family: OpenMMLab RTMO
+    role: fast_body17_fallback
+    framework: mmpose
+    skeleton: coco_17
+    input_size: [640, 640]
+    checkpoint: models/rtmo_l/weights/rtmo-l_16xb16-600e_coco-640x640-516a421f_20231211.pth
+    config: external/mmpose/configs/body_2d_keypoint/rtmo/coco/rtmo-l_16xb16-600e_coco-640x640.py
+    export_targets: [onnx]
+    license: Apache-2.0 for code; verify checkpoint terms
+    status: candidate
+    expected_strengths:
+      - One-stage multi-person speed
+      - Useful for dense/crowded cricket scenes
+    expected_risks:
+      - COCO-17 only unless extended or re-trained
+    sources:
+      - https://arxiv.org/abs/2312.07526
+      - https://github.com/open-mmlab/mmpose/tree/main/projects/rtmo
+
+  - id: yolo26x_pose
+    name: Ultralytics YOLO26x-pose
+    family: Ultralytics YOLO Pose
+    role: fast_body17_fallback
+    framework: ultralytics
+    skeleton: coco_17
+    input_size: [640, 640]
+    checkpoint: models/yolo26x_pose/weights/yolo26x-pose.pt
+    config: ultralytics_pose
+    export_targets: [onnx, tensorrt, openvino, coreml, tflite]
+    license: AGPL-3.0 or enterprise license required for closed products
+    status: verify_availability
+    expected_strengths:
+      - Production-friendly API and export path
+      - Good fast baseline
+    expected_risks:
+      - Body-only COCO-17
+      - License must be checked for commercial deployment
+    sources:
+      - https://docs.ultralytics.com/tasks/pose
+
+  - id: vitpose_h
+    name: ViTPose-H
+    family: ViTPose
+    role: accuracy_teacher
+    framework: mmpose
+    skeleton: coco_17
+    input_size: [256, 192]
+    checkpoint: models/vitpose_h/weights/td-hm_ViTPose-huge_8xb64-210e_coco-256x192-e32adcd4_20230314.pth
+    config: external/mmpose/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192.py
+    export_targets: [onnx]
+    license: Apache-2.0 for code; verify checkpoint terms
+    status: teacher_candidate
+    expected_strengths:
+      - High public benchmark accuracy
+      - Useful pseudo-label and distillation teacher
+    expected_risks:
+      - Not first choice for real-time multi-camera production
+    sources:
+      - https://arxiv.org/abs/2204.12484
+      - https://github.com/ViTAE-Transformer/ViTPose
+      - https://download.openmmlab.com/mmpose/v1/body_2d_keypoint/topdown_heatmap/coco/td-hm_ViTPose-huge_8xb64-210e_coco-256x192-e32adcd4_20230314.pth
+
+  - id: sapiens2_1b_pose
+    name: Sapiens2-1B Pose
+    family: Meta Sapiens2
+    role: offline_teacher
+    framework: sapiens2
+    skeleton: wholebody_308
+    input_size: [1024, 768]
+    checkpoint: models/sapiens2_1b_pose/weights/sapiens2_1b_pose.safetensors
+    config: external/sapiens2/sapiens/pose/configs/keypoints308/shutterstock_goliath_3po/sapiens2_1b_keypoints308_shutterstock_goliath_3po-1024x768.py
+    export_targets: [safetensors]
+    license: Sapiens2 license; verify commercial terms
+    status: offline_teacher_candidate
+    expected_strengths:
+      - Latest high-fidelity human-centric foundation baseline
+      - Useful for pseudo-labeling hard cricket occlusions
+    expected_risks:
+      - Very large model family; not default real-time path
+    sources:
+      - https://arxiv.org/abs/2604.21681
+      - https://github.com/facebookresearch/sapiens2
+
+  - id: mediapipe_blazepose_heavy
+    name: MediaPipe BlazePose GHUM Heavy
+    family: MediaPipe Pose
+    role: legacy_reference
+    framework: mediapipe
+    skeleton: mediapipe_33
+    input_size: dynamic
+    checkpoint: models/mediapipe_blazepose_heavy/weights/pose_landmarker_heavy.task
+    config: model_complexity=2
+    export_targets: [tflite]
+    license: Apache-2.0 for code; verify model terms
+    status: reference_only
+    expected_strengths:
+      - Real-time single-person baseline
+      - Emits visibility and approximate world landmarks
+    expected_risks:
+      - Not designed for multi-person stadium scenes
+      - Not WholeBody 133
+    sources:
+      - https://chuoling.github.io/mediapipe/solutions/pose
+
+  - id: openpose_body25
+    name: OpenPose BODY_25
+    family: CMU OpenPose
+    role: canonical_openpose_baseline
+    framework: openpose
+    skeleton: openpose_body25
+    input_size: dynamic
+    checkpoint: models/openpose_body25/weights/pose/body_25/pose_iter_584000.caffemodel
+    config: models/openpose_body25/configs/openpose_body25.yaml
+    export_targets: [openpose_json]
+    license: OpenPose license; verify terms for commercial use
+    status: candidate
+    expected_strengths:
+      - Canonical bottom-up multi-person OpenPose baseline
+      - BODY_25 includes body and foot keypoints
+      - Outputs stable JSON for downstream benchmarking
+    expected_risks:
+      - C++/Caffe/CUDA setup is heavier than Python-only models
+      - COCO model is faster to compare directly, but BODY_25 is the standard OpenPose default
+      - Requires separate build/install validation per machine
+    sources:
+      - https://github.com/CMU-Perceptual-Computing-Lab/openpose
+      - https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/02_output.md
