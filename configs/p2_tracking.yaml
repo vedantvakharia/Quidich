@@ -1,0 +1,37 @@
+# configs/p2_tracking.yaml
+# Stage thresholds
+stage1_confidence_threshold: 0.5
+stage2_confidence_min: 0.1          # matches P1 inference --conf (0.1); MUST stay >= P1 --conf
+cost_accept_threshold: 0.7
+lowconf_can_spawn: true
+
+# Cost matrix weights
+iou_alpha: 0.6
+pose_beta: 0.4
+
+# Pose vector
+pose_keypoint_confidence_min: 0.3
+min_shared_keypoints: 6
+scale_min_frac_bbox_h: 0.05
+
+# Spatial / motion gating
+chi2_gate: 9.21
+gate_bbox_factor: 1.5
+gate_max_distance_px: 600
+v_max_px_per_frame: 120
+
+# Dormant re-ID
+pose_cosine_reid_threshold: 0.25
+reid_ambiguity_margin: 0.05
+dormant_max_frames: 60
+
+# Kalman stability
+kalman_cov_trace_max: 1.0e6
+
+# Track confirmation
+tentative_confirm_hits: 3
+tentative_confirm_window: 5
+
+# Gallery
+pose_gallery_size: 30
+gallery_repr: medoid
