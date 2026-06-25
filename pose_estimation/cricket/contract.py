@@ -114,20 +114,37 @@ def validate_player(player: Any, *, final_handoff: bool) -> None:
     role = player.get("role", "unknown")
     if role not in ROLE_VALUES:
         raise ValueError(f"invalid role: {role}")
+
+    # Fix 4.1: track_confidence must be in [0.0, 1.0]
+    track_confidence = player.get("track_confidence")
+    if track_confidence is not None:
+        if not is_finite_number(track_confidence):
+            raise ValueError("track_confidence must be numeric or null")
+        if float(track_confidence) < 0.0 or float(track_confidence) > 1.0:
+            raise ValueError("track_confidence must be in [0.0, 1.0]")
+
+    # Fix 4.3: LOST-state players may omit bbox and pose (no detection this frame)
+    track_state = player.get("track_state", "confirmed")
+    is_lost = track_state in ("lost", "tentative")
+
     validate_numeric_vector(
         player.get("bbox_xywh_px"),
         length=4,
         field_name="bbox_xywh_px",
+        allow_none=is_lost,
     )
     validate_numeric_vector(
         player.get("bbox_xywh_norm"),
         length=4,
         field_name="bbox_xywh_norm",
+        allow_none=is_lost,
     )
-    track_confidence = player.get("track_confidence")
-    if track_confidence is not None and not is_finite_number(track_confidence):
-        raise ValueError("track_confidence must be numeric or null")
-    validate_pose_2d(player.get("pose_2d"))
+
+    pose_2d = player.get("pose_2d")
+    if pose_2d is None and not is_lost:
+        raise ValueError("pose_2d is required for non-lost players")
+    if pose_2d is not None:
+        validate_pose_2d(pose_2d)
     validate_pose_3d(player.get("pose_3d"))
 
 
