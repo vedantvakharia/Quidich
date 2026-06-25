@@ -76,7 +76,7 @@ results/*
 benchmarks/reports/*
 !benchmarks/reports/.gitkeep
 !benchmarks/reports/README.md
-outputs/
+docs
 
 # --- Local research/reference dump; curate source-worthy notes into docs/ ---
 Papers/

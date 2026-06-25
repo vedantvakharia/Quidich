@@ -38,3 +38,19 @@ def test_stage2_floor_must_not_undercut_intent():
     cfg = load_p2_config(None)
     # coupling guard from spec §5 / Global Constraints
     assert cfg.stage2_confidence_min <= cfg.stage1_confidence_threshold
+
+
+def test_yaml_type_coercion(tmp_path: Path):
+    path = tmp_path / "coerce.yaml"
+    path.write_text(
+        "kalman_cov_trace_max: '1.0e6'\n"
+        "dormant_max_frames: '45'\n"
+        "stage1_confidence_threshold: 0.6\n",
+        encoding="utf-8"
+    )
+    cfg = load_p2_config(path)
+    assert isinstance(cfg.kalman_cov_trace_max, float)
+    assert cfg.kalman_cov_trace_max == 1.0e6
+    assert isinstance(cfg.dormant_max_frames, int)
+    assert cfg.dormant_max_frames == 45
+

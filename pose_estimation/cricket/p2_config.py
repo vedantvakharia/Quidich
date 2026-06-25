@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, fields
 from pathlib import Path
-from typing import Any
+from typing import Any, get_type_hints
 
 import yaml
 
@@ -47,8 +47,22 @@ def load_p2_config(path: str | Path | None) -> P2Config:
         return P2Config()
     with Path(path).open("r", encoding="utf-8") as handle:
         raw: dict[str, Any] = yaml.safe_load(handle) or {}
-    known = {f.name for f in fields(P2Config)}
-    unknown = set(raw) - known
+    type_hints = get_type_hints(P2Config)
+    unknown = set(raw) - set(type_hints)
     if unknown:
         raise ValueError(f"unknown P2 config keys: {sorted(unknown)}")
-    return P2Config(**raw)
+
+    coerced: dict[str, Any] = {}
+    for name, val in raw.items():
+        field_type = type_hints[name]
+        if field_type is float and not isinstance(val, float):
+            coerced[name] = float(val)
+        elif field_type is int and not isinstance(val, int):
+            coerced[name] = int(val)
+        elif field_type is bool and not isinstance(val, bool):
+            coerced[name] = bool(val)
+        else:
+            coerced[name] = val
+    return P2Config(**coerced)
+
+

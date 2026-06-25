@@ -1,0 +1,21 @@
+{
+  "camera_id": "cam_01",
+  "confirmed_tracks": 10,
+  "delivery_id": "CCPL080626M1_1_14_1",
+  "dormant_deleted": 0,
+  "dormant_reid_ambiguous": 0,
+  "dormant_reidentified": 0,
+  "error": null,
+  "frames_expected": 600,
+  "frames_read": 600,
+  "frames_with_unmatched_detections": 12,
+  "id_switches_estimated": 0,
+  "kalman_cov_explosions": 5,
+  "lowconf_tracks_spawned": 11,
+  "pose_skipped_low_overlap": 86,
+  "pose_undefined_count": 0,
+  "status": "ok",
+  "tentative_rejected": 5,
+  "tentative_unresolved_at_eof": 0,
+  "total_tracks_spawned": 15
+}
