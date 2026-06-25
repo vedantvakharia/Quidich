@@ -17,6 +17,14 @@ IMAGE_HEIGHT = 1440
 CAMERA_KEYS = [f"C{index:02d}" for index in range(1, 8)]
 
 
+def get_calibration_dir(drive_root: str | Path) -> Path:
+    drive_root = Path(drive_root)
+    p1 = drive_root / "dataset" / "calibration_data"
+    if p1.exists():
+        return p1
+    return drive_root / CALIBRATION_RELATIVE_DIR
+
+
 def read_json(path: str | Path) -> Any:
     with Path(path).open("r", encoding="utf-8") as handle:
         return json.load(handle)
@@ -158,7 +166,7 @@ def compare_ball_reprojection(drive_root: str | Path) -> dict[str, Any]:
     """Compare projected 3D ball points with existing reprojection coordinates."""
 
     drive_root = Path(drive_root)
-    calibration_dir = drive_root / CALIBRATION_RELATIVE_DIR
+    calibration_dir = get_calibration_dir(drive_root)
     projection_matrices = load_projection_matrices(calibration_dir)
     events_root = drive_root / "dataset" / "events-data"
     errors = []
@@ -263,7 +271,7 @@ def audit_calibration(drive_root: str | Path) -> dict[str, Any]:
     """Load and validate calibration files for Phase 0 readiness."""
 
     drive_root = Path(drive_root)
-    calibration_dir = drive_root / CALIBRATION_RELATIVE_DIR
+    calibration_dir = get_calibration_dir(drive_root)
     errors: list[str] = []
     warnings: list[str] = []
     required_files = [

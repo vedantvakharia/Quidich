@@ -120,6 +120,7 @@ class TrackManager:
                         c.det_a.bbox_xywh_px if not c.single_camera else c.det_a.bbox_xywh_px,
                         None, frame_index)
             hit_ids.add(id(t))
+            c.global_track = t
 
         # Stage 2: low-conf vs unmatched Confirmed
         unmatched_active = [active[i] for i in um_t1 if active[i].state == CONFIRMED]
@@ -128,6 +129,7 @@ class TrackManager:
             c = low[ci]; t = unmatched_active[ti]
             t.apply_hit(c.ground_xy, c.det_a.bbox_xywh_px, None, frame_index)
             hit_ids.add(id(t))
+            c.global_track = t
 
         # Unmatched high-conf: try re-entry, else new Tentative
         unmatched_high = [high[i] for i in um_h]
@@ -140,6 +142,7 @@ class TrackManager:
                 revival.apply_hit(c.ground_xy, c.det_a.bbox_xywh_px, None, frame_index)
                 self.tracks.append(revival)
                 hit_ids.add(id(revival))
+                c.global_track = revival
             else:
                 new_t = GlobalTrack(
                     global_player_id=None, state=TENTATIVE,
@@ -150,6 +153,7 @@ class TrackManager:
                 )
                 self.tracks.append(new_t)
                 hit_ids.add(id(new_t))
+                c.global_track = new_t
 
         # Mark missed tracks (predict already called above; just mark state)
         for t in self.tracks:

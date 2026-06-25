@@ -1,0 +1,19 @@
+{
+  "batch_size": 32,
+  "conf": 0.25,
+  "created_at": "2026-06-23T23:24:38.699945+00:00",
+  "delivery_id": "CCPL080626M1_1_14_1",
+  "device": "cuda:0",
+  "drive_root": "C:\\Users\\intel\\Downloads\\Quidich",
+  "half": true,
+  "imgsz": 640,
+  "inference_mode": "full_frame",
+  "input_mode": "opencv_preload",
+  "iou": 0.7,
+  "model_id": "yolo26x_pose",
+  "prediction_dir": "C:\\Users\\intel\\Downloads\\Quidich\\outputs\\p1\\predictions",
+  "preload_full_frame": true,
+  "resize_long_side": 0,
+  "run_id": "gpu-full-cam04",
+  "schema_version": "cricket_phase1_run/v1"
+}

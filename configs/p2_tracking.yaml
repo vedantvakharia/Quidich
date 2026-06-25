@@ -26,7 +26,7 @@ reid_ambiguity_margin: 0.05
 dormant_max_frames: 60
 
 # Kalman stability
-kalman_cov_trace_max: 1.0e6
+kalman_cov_trace_max: 1.0e+6
 
 # Track confirmation
 tentative_confirm_hits: 3

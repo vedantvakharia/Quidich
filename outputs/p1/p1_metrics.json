@@ -1,0 +1,85 @@
+{
+  "batch_fallbacks": [],
+  "batch_size": 32,
+  "conf": 0.25,
+  "created_at": "2026-06-23T23:24:38.699945+00:00",
+  "delivery_id": "CCPL080626M1_1_14_1",
+  "device": "cuda:0",
+  "failures": [],
+  "git_sha": null,
+  "half": true,
+  "imgsz": 640,
+  "inference_mode": "full_frame",
+  "input_mode": "opencv_preload",
+  "iou": 0.7,
+  "match_id": "CCPL080626",
+  "model_id": "yolo26x_pose",
+  "per_camera": {
+    "cam_04": {
+      "append_mode": false,
+      "camera_dir": "C:\\Users\\intel\\Downloads\\Quidich\\dataset\\bt_01\\CCPL080626M1_1_14_1\\camera04",
+      "decode_latency": {
+        "count": 600,
+        "max_ms": 148.20589998271316,
+        "p50_ms": 43.46065002027899,
+        "p95_ms": 50.926500000059605
+      },
+      "empty_detection_frames": 0,
+      "frames_selected": 600,
+      "frames_to_process": 600,
+      "inference_latency": {
+        "count": 600,
+        "max_ms": 420.60289375149296,
+        "p50_ms": 29.592790622700704,
+        "p95_ms": 420.60289375149296
+      },
+      "players_per_frame_mean": 5.031666666666666,
+      "prediction_jsonl": "C:\\Users\\intel\\Downloads\\Quidich\\outputs\\p1\\predictions\\cam_04.jsonl",
+      "records_reused": 0,
+      "records_written": 600,
+      "records_written_this_run": 600,
+      "resumed_from_existing": false,
+      "skipped_complete_camera": false,
+      "total_latency": {
+        "count": 600,
+        "max_ms": 467.85979374908493,
+        "p50_ms": 73.12836874916684,
+        "p95_ms": 459.61779373828904
+      },
+      "total_players_detected": 3019
+    }
+  },
+  "preload_full_frame": true,
+  "resize_long_side": 0,
+  "run_id": "gpu-full-cam04",
+  "schema_version": "cricket_phase1_metrics/v1",
+  "summary": {
+    "camera_count": 1,
+    "decode_latency": {
+      "count": 600,
+      "max_ms": 148.20589998271316,
+      "p50_ms": 43.46065002027899,
+      "p95_ms": 50.926500000059605
+    },
+    "failed_frames": 0,
+    "fps_overall": 9.300533390240934,
+    "inference_latency": {
+      "count": 600,
+      "max_ms": 420.60289375149296,
+      "p50_ms": 29.592790622700704,
+      "p95_ms": 420.60289375149296
+    },
+    "records_reused": 0,
+    "records_written": 600,
+    "records_written_this_run": 600,
+    "status": "pass",
+    "total_latency": {
+      "count": 600,
+      "max_ms": 467.85979374908493,
+      "p50_ms": 73.12836874916684,
+      "p95_ms": 459.61779373828904
+    },
+    "total_players_detected": 3019,
+    "wall_clock_s": 64.51242899999488
+  }
+}

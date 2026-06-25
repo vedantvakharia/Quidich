@@ -1,7 +1,7 @@
 """P3 per-frame cross-camera association with sticky anchor and soft Huber costs."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
@@ -41,6 +41,7 @@ class Correspondence:
     track_confidence: float
     single_camera: bool
     ground_xy: np.ndarray      # world XY ground position (from triangulation or single-cam estimate)
+    all_detections: list[Detection3] = field(default_factory=list)
 
 
 @dataclass
@@ -283,6 +284,7 @@ def associate_frame(
                 det_a=da, det_b=None, track_confidence=0.3,
                 single_camera=True,
                 ground_xy=np.full(2, np.nan),  # Fix 4.2: no fake ground position
+                all_detections=[da],
             ))
         else:
             # Average ground XY across partners (cycle-consistency aggregate)
@@ -293,6 +295,7 @@ def associate_frame(
                 det_a=da, det_b=matches[0][0],
                 track_confidence=avg_conf,
                 single_camera=False, ground_xy=ground_xy,
+                all_detections=[da] + [m[0] for m in matches],
             ))
         emitted.add(i)
 
